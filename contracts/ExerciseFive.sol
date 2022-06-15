@@ -18,15 +18,11 @@ contract ExerciseFive is ExerciseFour {
     mapping(address => bool) internal _incomingTransfers;
 
     mapping(address => uint) public _lockTime;
-    bool private firstExec;
-
 
     constructor(string memory symbol_, 
     string memory name_, 
     uint256 decimals_,
-    uint256 totalSupply_) ExerciseFour(symbol_, name_, decimals_, totalSupply_) {
-        firstExec = true;
-    }
+    uint256 totalSupply_) ExerciseFour(symbol_, name_, decimals_, totalSupply_) {}
 
     modifier whenAddressNotPaused(address account) {
         require(!checkIfPaused(account), "ExerciseFive: this address is paused");
