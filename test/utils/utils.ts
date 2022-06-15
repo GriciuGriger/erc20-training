@@ -1,5 +1,6 @@
 import { ContractTransaction, Event } from 'ethers';
 import { expect } from 'chai';
+import { ethers } from 'hardhat';
 
 export async function hasEmittedEvent (promise: Promise<ContractTransaction>, expectedEvent: string, expectedParams = {}): Promise<void> {
     promise.catch(() => { }) // Avoids uncaught promise rejections in case an input validation causes us to return early
@@ -41,4 +42,9 @@ export async function assertErrorMessage (
             expect(reason.message).to.contain(message);
         }
     );
+}
+
+export async function increaseTime (x: string | number): Promise<void> {
+  await ethers.provider.send('evm_increaseTime', [x])
+  await ethers.provider.send('evm_mine', [])
 }

@@ -1,6 +1,7 @@
 pragma solidity ^0.8.0;
 
 import "./ExerciseFour.sol";
+import "hardhat/console.sol";
 
 contract ExerciseFive is ExerciseFour {
 
@@ -13,16 +14,19 @@ contract ExerciseFive is ExerciseFour {
     event TimeLocked(address account, uint256 time);
     event LockTimeExpiry(address account);
 
-
     mapping(address => bool) internal _outgoingTransfers;
     mapping(address => bool) internal _incomingTransfers;
 
     mapping(address => uint) public _lockTime;
+    bool private firstExec;
+
 
     constructor(string memory symbol_, 
     string memory name_, 
     uint256 decimals_,
-    uint256 totalSupply_) ExerciseFour(symbol_, name_, decimals_, totalSupply_) {}
+    uint256 totalSupply_) ExerciseFour(symbol_, name_, decimals_, totalSupply_) {
+        firstExec = true;
+    }
 
     modifier whenAddressNotPaused(address account) {
         require(!checkIfPaused(account), "ExerciseFive: this address is paused");
@@ -46,11 +50,11 @@ contract ExerciseFive is ExerciseFour {
 
     modifier nonTimelocked(address account) {
         require(block.timestamp >= _lockTime[account], "ExerciseFive: this address is timelocked"); 
-        _;
         if(_lockTime[account] != 0) {
             _lockTime[account] = 0;
             emit LockTimeExpiry(account);
         }
+        _;
     }
 
     function pauseAddress(address account) public onlyOwner whenAddressNotPaused(account) {
@@ -92,9 +96,6 @@ contract ExerciseFive is ExerciseFour {
 
         _lockTime[account] = block.timestamp + time;
 
-        // _outgoingTransfers[account] = true;
-        // _incomingTransfers[account] = true;
-
         emit TimeLocked(account, time);
     }
 
@@ -106,19 +107,33 @@ contract ExerciseFive is ExerciseFour {
         return _incomingTransfers[account];
     }
 
-    function transfer(address recipient,
-    uint256 amount) public virtual override whenAddressNotPaused(msg.sender) 
-    whenAddressNotInpaused(recipient)
-    nonTimelocked(msg.sender)
-    nonTimelocked(recipient){
+    function transfer(
+        address recipient,
+        uint256 amount
+    ) 
+        public 
+        virtual 
+        override 
+        whenAddressNotInpaused(recipient)
+        whenAddressNotPaused(msg.sender) 
+        nonTimelocked(recipient)
+        nonTimelocked(msg.sender) 
+    {
         super.transfer(recipient, amount);
     }
 
-    function transferFrom(address sender, address recipient,
-    uint256 amount) public virtual override whenAddressNotPaused(sender) 
-    whenAddressNotInpaused(recipient) 
-    nonTimelocked(sender) 
-    nonTimelocked(recipient) {
+    function transferFrom(address sender, 
+    address recipient,
+    uint256 amount
+    ) 
+        public 
+        virtual 
+        override 
+        whenAddressNotInpaused(recipient) 
+        whenAddressNotPaused(sender) 
+        nonTimelocked(recipient) 
+        nonTimelocked(sender) 
+    {
         super.transferFrom(sender, recipient, amount);
     }
 

@@ -5,7 +5,7 @@ import { Factory } from "./utils/contracts";
 import { ExerciseFour } from '../src/types/';
 import { hasEmittedEvent, assertErrorMessage } from "./utils/utils";
 
-describe("Tests of ExerciseThree logic and storage", async() => {
+describe("Tests of ExerciseFour logic and storage", async() => {
 
     let admin : SignerWithAddress;
     let gary : SignerWithAddress;
