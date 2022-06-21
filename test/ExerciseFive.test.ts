@@ -4,8 +4,6 @@ import { ethers } from "hardhat";
 import { Factory } from "./utils/contracts";
 import { ExerciseFive } from '../src/types/';
 import { hasEmittedEvent, assertErrorMessage, increaseTime } from "./utils/utils";
-import { time } from "console";
-import { connect } from "http2";
 
 describe("Tests of ExerciseFive logic and storage", async() => {
 

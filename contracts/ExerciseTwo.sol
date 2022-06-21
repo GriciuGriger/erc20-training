@@ -13,7 +13,13 @@ contract ExerciseTwo is ExerciseOne {
     uint256 decimals_,
     uint256 totalSupply_) ExerciseOne(symbol_, name_, decimals_, totalSupply_) {}
 
-    function mint(address account, uint256 amount) public virtual {
+    function mint(address account, uint256 amount) public virtual 
+    {
+      _mint(account, amount);  
+    }
+
+    function _mint(address account, uint256 amount) internal 
+    {
         require(amount != 0, "Cannot mint 0 tokens");
 
         _totalSupply += amount;
@@ -22,7 +28,13 @@ contract ExerciseTwo is ExerciseOne {
         emit TokenMinted(msg.sender, account, amount);
     }
 
-    function burn(address account, uint256 amount) public virtual {
+    function burn(address account, uint256 amount) public virtual 
+    {
+        _burn(account, amount);
+    }
+
+    function _burn(address account, uint256 amount) internal
+    {
         require(_balances[account] >= amount, "Burn amount exceeds balance");
 
         _totalSupply -= amount;
@@ -30,5 +42,6 @@ contract ExerciseTwo is ExerciseOne {
 
         emit TokenBurnt(account, msg.sender, amount);
     }
+
 
 }
