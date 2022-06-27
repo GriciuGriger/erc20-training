@@ -3,7 +3,6 @@ pragma solidity ^0.8.0;
 import "./ExerciseFive.sol";
 import "hardhat/console.sol";
 
-
 contract ExerciseSix is ExerciseFive {
 
     event TokenPurchase(address purchaser, uint256 amount, uint256 price);
@@ -55,7 +54,11 @@ contract ExerciseSix is ExerciseFive {
         emit TokenSale(msg.sender, amount, _sellPrice);
     }
 
-    function changeBuyPrice(uint256 price) external onlyOwner 
+    function changeBuyPrice(uint256 price) external virtual onlyOwner {
+        _changeBuyPrice(price);
+    }
+
+    function _changeBuyPrice(uint256 price) internal
     {
         require(price != 0, "Cannot change to 0 Price");
         require(price > _sellPrice, "Buy price cannot be smaller than Sell price");
@@ -68,7 +71,11 @@ contract ExerciseSix is ExerciseFive {
         emit TokenBuyPriceChanged(msg.sender, price);
     }
 
-    function changeSellPrice(uint256 price) external onlyOwner 
+    function changeSellPrice(uint256 price) external virtual onlyOwner {
+        _changeSellPrice(price);
+    }
+
+    function _changeSellPrice(uint256 price) internal 
     {
         require(price != 0, "Cannot change to 0 price");
         require(price < _buyPrice, "Sell price cannot be larger than Buy price");
@@ -81,13 +88,17 @@ contract ExerciseSix is ExerciseFive {
         emit TokenSellPriceChanged(msg.sender, price);
     }
 
-    function withdraw(uint256 gweiToWithdraw) payable external onlyOwner 
+    function withdraw(uint256 gweiToWithdraw) external virtual payable onlyOwner {
+        _withdraw(gweiToWithdraw);
+    }
+
+    function _withdraw(uint256 gweiToWithdraw) internal  
     {
         uint256 contractBalance = _payout.balance;
         uint256 costOfLeftTokens = _totalSupply * _sellPrice;
         
         require(contractBalance - gweiToWithdraw > costOfLeftTokens, "The amount of ether to withdraw exceeds cost of tokens left");
-
+ 
         (bool success, ) = payable(msg.sender).call{value: gweiToWithdraw}("");   
         require(success, "Failed to withdraw Ether");     
 

@@ -15,7 +15,7 @@ contract ExerciseTwo is ExerciseOne {
 
     function mint(address account, uint256 amount) public virtual 
     {
-      _mint(account, amount);  
+        _mint(account, amount);
     }
 
     function _mint(address account, uint256 amount) internal 
@@ -42,6 +42,5 @@ contract ExerciseTwo is ExerciseOne {
 
         emit TokenBurnt(account, msg.sender, amount);
     }
-
 
 }

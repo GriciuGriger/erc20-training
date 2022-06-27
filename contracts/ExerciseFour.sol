@@ -26,17 +26,25 @@ contract ExerciseFour is ExerciseThree {
         _;
     }
 
-    function pause() public onlyOwner whenNotPaused {
+    function pause() public virtual onlyOwner whenNotPaused {
+        _pause();
+    }
+
+    function _pause() internal {
         _paused = true;
         emit Paused(msg.sender);
     }
 
-    function unpause() public onlyOwner whenPaused {
+    function unpause() public virtual onlyOwner whenPaused {
+        _unpause();
+    }
+
+    function _unpause() internal {
         _paused = false;
         emit Unpaused(msg.sender);
     }
 
-    function isPaused() public view virtual returns (bool) {
+    function isPaused() public view returns (bool) {
         return _paused;
     }
 

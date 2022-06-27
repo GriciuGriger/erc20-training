@@ -39,12 +39,12 @@ contract ExerciseThree is ExerciseTwo {
         ownershipAccepted[msg.sender] = flag;
     }
 
-    function mint(address account, uint256 amount) public override onlyOwner {
-        super.mint(account, amount);
+    function mint(address account, uint256 amount) public virtual override onlyOwner {
+        _mint(account, amount);
     }
 
-   function burn(address account, uint256 amount) public override onlyOwner {
-        super.burn(account, amount);
+   function burn(address account, uint256 amount) public virtual override onlyOwner {
+        _burn(account, amount);
     }
 
    function owner() public view virtual returns (address) {

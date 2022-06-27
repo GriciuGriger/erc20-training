@@ -53,17 +53,32 @@ contract ExerciseFive is ExerciseFour {
         _;
     }
 
-    function pauseAddress(address account) public onlyOwner whenAddressNotPaused(account) {
+    function pauseAddress(address account) public virtual onlyOwner {
+        _pauseAddress(account);
+    }
+
+    function _pauseAddress(address account) internal 
+    whenAddressNotPaused(account) {
         _outgoingTransfers[account] = true;
         emit AddressPaused(account);
     }
 
-    function unpauseAddress(address account) public onlyOwner whenAddressPaused(account) {
+    function unpauseAddress(address account) public virtual onlyOwner {
+        _unpauseAddress(account);
+    }
+
+    function _unpauseAddress(address account) internal 
+    whenAddressPaused(account) {
         _outgoingTransfers[account] = false;
         emit AddressUnpaused(account);
     }
 
-    function pauseBoth(address account) public onlyOwner whenAddressNotInpaused(account) {
+    function pauseBoth(address account) public virtual onlyOwner {
+        _pauseBoth(account);
+    }
+
+    function _pauseBoth(address account) internal 
+    whenAddressNotInpaused(account) {
 
          if(!checkIfPaused(account)){
             _outgoingTransfers[account] = true;
@@ -74,7 +89,14 @@ contract ExerciseFive is ExerciseFour {
         emit AddressBothDirectionsPaused(account);
     }
 
-     function unpauseBoth(address account) public onlyOwner whenAddressInpaused(account) {
+    function unpauseBoth(address account) public virtual onlyOwner 
+    {
+        _unpauseBoth(account);
+    }
+
+    function _unpauseBoth(address account) internal 
+    whenAddressInpaused(account) 
+    {
 
         if(checkIfPaused(account)){
             _outgoingTransfers[account] = false;
@@ -85,10 +107,19 @@ contract ExerciseFive is ExerciseFour {
         emit AddressBothDirectionsUnpaused(account);
     }
 
-    function timelock(address account, uint256 time) public onlyOwner 
+    function timelock(address account, uint256 time) 
+        public 
+        virtual 
+        onlyOwner 
+    {
+         _timelock(account, time);
+    }
+
+
+    function _timelock(address account, uint256 time) internal 
         whenAddressNotPaused(account) 
         whenAddressNotInpaused(account) 
-        nonTimelocked(account) {
+        nonTimelocked(account)  {
 
         _lockTime[account] = block.timestamp + time;
 
@@ -132,8 +163,6 @@ contract ExerciseFive is ExerciseFour {
     {
         super.transferFrom(sender, recipient, amount);
     }
-
-
 
 
 }
