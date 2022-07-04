@@ -115,7 +115,6 @@ contract ExerciseFive is ExerciseFour {
          _timelock(account, time);
     }
 
-
     function _timelock(address account, uint256 time) internal 
         whenAddressNotPaused(account) 
         whenAddressNotInpaused(account) 
@@ -145,8 +144,9 @@ contract ExerciseFive is ExerciseFour {
         whenAddressNotPaused(msg.sender) 
         nonTimelocked(recipient)
         nonTimelocked(msg.sender) 
+        returns (bool)
     {
-        super.transfer(recipient, amount);
+        return super.transfer(recipient, amount);
     }
 
     function transferFrom(address sender, 
@@ -160,9 +160,9 @@ contract ExerciseFive is ExerciseFour {
         whenAddressNotPaused(sender) 
         nonTimelocked(recipient) 
         nonTimelocked(sender) 
+        returns (bool)
     {
-        super.transferFrom(sender, recipient, amount);
+        return super.transferFrom(sender, recipient, amount);
     }
-
 
 }

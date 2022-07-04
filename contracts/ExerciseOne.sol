@@ -12,12 +12,12 @@ contract ExerciseOne {
     string internal _symbol;
     string internal _name;
 
-    uint256 internal _decimals;
     uint256 internal _totalSupply;
+    uint8 internal _decimals;
 
     constructor(string memory symbol_, 
     string memory name_, 
-    uint256 decimals_, 
+    uint8 decimals_, 
     uint256 totalSupply_) {
         _symbol = symbol_;
         _name = name_;
@@ -27,7 +27,7 @@ contract ExerciseOne {
     }
 
     function transfer(address recipient,
-    uint256 amount) public virtual {
+    uint256 amount) public virtual returns (bool) {
         require(msg.sender != address(0) && recipient != address(0), "Transfer from or to the zero address");
         require(_balances[msg.sender] >= amount, "Insufficient funds to transfer");
         require(amount != 0, "0 money transfer not allowed");
@@ -36,11 +36,12 @@ contract ExerciseOne {
         _balances[recipient] += amount;
         
         emit Transfer(msg.sender, recipient, amount);
+        return true;
     }
 
     function transferFrom(address sender, 
     address recipient, 
-    uint256 amount) public virtual {
+    uint256 amount) public virtual returns (bool) {
         require(amount <= _balances[sender], "Transfer amount exceeds balance");
         require(amount <= _allowances[sender][msg.sender], "Transfer amount exceeds allowance");
 
@@ -49,15 +50,16 @@ contract ExerciseOne {
         _balances[recipient] += amount;
 
         emit Transfer(sender, recipient, amount);
+        return true;
     }
 
-    function approve(address spender, uint256 amount) public {
+    function approve(address spender, uint256 amount) public returns (bool){
         require(msg.sender != address(0), "Approve from the zero address");
         require(spender != address(0), "Approve to the zero address");
 
          _allowances[msg.sender][spender] = amount;
         emit Approval(msg.sender, spender, amount);
-
+        return true;
     }
 
     function balanceOf(address account) public view virtual returns (uint256) {
@@ -76,7 +78,7 @@ contract ExerciseOne {
         return _name;
     }
 
-    function decimals() public view virtual returns (uint256) {
+    function decimals() public view virtual returns (uint8) {
         return _decimals;
     }
 

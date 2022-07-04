@@ -49,13 +49,13 @@ contract ExerciseFour is ExerciseThree {
     }
 
     function transfer(address recipient,
-    uint256 amount) public virtual override whenNotPaused {
-        super.transfer(recipient, amount);
+    uint256 amount) public virtual override whenNotPaused returns(bool) {
+        return super.transfer(recipient, amount);
     }
 
     function transferFrom(address sender, address recipient,
-    uint256 amount) public virtual override whenNotPaused {
-        super.transferFrom(sender, recipient, amount);
+    uint256 amount) public virtual override whenNotPaused returns (bool) {
+        return super.transferFrom(sender, recipient, amount);
     }
 
 }

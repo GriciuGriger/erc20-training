@@ -56,5 +56,13 @@ export const Factory : { [contractName : string]: () => Promise<Contract> } = {
 
         return contract;
     },
+    ExerciseSeven: async() => {
+        const [ admin ] = await ethers.getSigners();
 
+        const contractFactory = await ethers.getContractFactory('ExerciseSeven', admin);
+        const contract : Contract = <any> await contractFactory.deploy("TEST7", "4soft Training ERC20 Contract", 18, 0);
+        await contract.deployed();
+
+        return contract;
+    }
 }
