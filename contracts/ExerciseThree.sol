@@ -7,15 +7,14 @@ contract ExerciseThree is ExerciseTwo {
 
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
-    address private _contractOwner;
-    mapping(address => bool) internal ownershipAccepted;
+    address public _contractOwner;
+    address public _pendingOwner;
 
     constructor(string memory symbol_, 
     string memory name_, 
-    uint256 decimals_,
+    uint8 decimals_,
     uint256 totalSupply_) ExerciseTwo(symbol_, name_, decimals_, totalSupply_) {
         _contractOwner = msg.sender;
-        ownershipAccepted[address(0)] = true;
     }
 
     modifier onlyOwner() {
@@ -23,20 +22,22 @@ contract ExerciseThree is ExerciseTwo {
         _;
     }
 
-    function transferOwnership(address newOwner) public virtual onlyOwner {
-        require(ownershipAccepted[newOwner], "ExerciseThree: new owner is not accepting granted ownership");
-
-        address oldOwner = _contractOwner;
-        _contractOwner = newOwner;
-        emit OwnershipTransferred(oldOwner, newOwner);
+    function transferOwnership(address pendingOwner_) public virtual onlyOwner {
+        _pendingOwner = pendingOwner_;
     }
 
     function renounceOwnership() public virtual onlyOwner {
-        transferOwnership(address(0));
+        _contractOwner = address(0);
     }
 
     function acceptOwnership(bool flag) external {
-        ownershipAccepted[msg.sender] = flag;
+        require(msg.sender == _pendingOwner, "ExerciseThree: caller is not pending owner");
+        require(flag, "ExerciseThree: pending owner rejects the ownership");
+
+        address oldOwner = _contractOwner;
+        _contractOwner = _pendingOwner;
+        emit OwnershipTransferred(oldOwner, _contractOwner);
+        
     }
 
     function mint(address account, uint256 amount) public virtual override onlyOwner {

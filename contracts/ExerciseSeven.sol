@@ -1,112 +1,108 @@
 pragma solidity ^0.8.0;
 
+import "./ExerciseFive.sol";
 import "./ExerciseSix.sol";
 
-contract ExerciseSeven is ExerciseSix {
+contract ExerciseSeven is ExerciseFive, Market {
 
-    enum Role{ MINTER, GLOBAL_PAUSER, TIME_AND_ADRESS_LOCKER, MARKETER }
+    bytes32 public constant MINTER_ROLE = bytes32(uint256(0x01));
+    bytes32 public constant PAUSER_ROLE = bytes32(uint256(0x02));
+    bytes32 public constant ADDRESS_LOCK_ROLE = bytes32(uint256(0x03));
+    bytes32 public constant MARKETER_ROLE = bytes32(uint256(0x04));
 
     event AdministratorChanged(address previousAdminRole, address newAdminRole);
-    event RoleGranted(Role role, address account);
-    event RoleRevoked(Role role, address account);
-    event RoleRenounced(Role role, address account);
+    event RoleGranted(bytes32 role, address account);
+    event RoleRevoked(bytes32 role, address account);
+    event RoleRenounced(bytes32 role, address account);
 
-    address private _administrator;
-
-    mapping(address => mapping(Role => bool)) internal _hasRole;
+    mapping(address => mapping(bytes32 => bool)) internal _hasRole;
 
     constructor(string memory symbol_, 
     string memory name_, 
-    uint256 decimals_,
-    uint256 totalSupply_) ExerciseSix(symbol_, name_, decimals_, totalSupply_) {
-        _administrator = msg.sender;
-        _hasRole[msg.sender][Role.MINTER] = true;
-        _hasRole[msg.sender][Role.GLOBAL_PAUSER] = true;
-        _hasRole[msg.sender][Role.TIME_AND_ADRESS_LOCKER] = true;
-        _hasRole[msg.sender][Role.MARKETER] = true;
+    uint8 decimals_,
+    uint256 totalSupply_) ExerciseFive(symbol_, name_, decimals_, totalSupply_) {
+        _hasRole[msg.sender][MINTER_ROLE] = true;
+        _hasRole[msg.sender][PAUSER_ROLE] = true;
+        _hasRole[msg.sender][ADDRESS_LOCK_ROLE] = true;
+        _hasRole[msg.sender][MARKETER_ROLE] = true;
     }
 
-    modifier isAdmin() {
-        require(_administrator == msg.sender, "ExerciseSeven: caller is not the admin");
-        _;
-    }
-
-    modifier onlyRole(Role role) {
+    modifier onlyRole(bytes32 role) {
         require(hasRole(msg.sender, role), "ExerciseSeven: caller doesn't have this role");
         _;
     }
 
-    function transferAdminRole(address newAdmin) public virtual isAdmin {
+    function transferAdminRole(address newAdmin) public virtual onlyOwner {
 
-        address oldAdmin = _administrator;
-        _administrator = newAdmin;
+        address oldAdmin = _contractOwner;
+        _contractOwner = newAdmin;
         emit AdministratorChanged(oldAdmin, newAdmin);
     }
 
-    function hasRole(address account, Role role) internal view returns (bool){
+    function hasRole(address account, bytes32 role) internal view returns (bool){
         return _hasRole[account][role]; 
     }
 
-    function grantRole(address account, Role role) external isAdmin {
+    function grantRole(address account, bytes32 role) external onlyOwner {
         _hasRole[account][role] = true;
         emit RoleGranted(role, account);
     }
     
-    function revokeRole(address account, Role role) external isAdmin {
+    function revokeRole(address account, bytes32 role) external onlyOwner {
         _hasRole[account][role] = false;
         emit RoleRevoked(role, account);
     }
 
-    function renounceRole(Role role) external {
+    function renounceRole(bytes32 role) external {
         _hasRole[msg.sender][role] = false;
         emit RoleRenounced(role, msg.sender);
     }
 
-    function mint(address account, uint256 amount) public override onlyRole(Role.MINTER) {
+    function mint(address account, uint256 amount) public override onlyRole(MINTER_ROLE) {
         _mint(account, amount);
     } 
 
-    function burn(address account, uint256 amount) public override onlyRole(Role.MINTER) {
+    function burn(address account, uint256 amount) public override onlyRole(MINTER_ROLE) {
         _burn(account, amount);
     }  
 
-    function pause() public override onlyRole(Role.GLOBAL_PAUSER) {
+    function pause() public override onlyRole(PAUSER_ROLE) {
         _pause();
     }
 
-    function unpause() public override onlyRole(Role.GLOBAL_PAUSER) {
+    function unpause() public override onlyRole(PAUSER_ROLE) {
         _unpause();
     }
 
-    function pauseAddress(address account) public override onlyRole(Role.GLOBAL_PAUSER) {
+    function pauseAddress(address account) public override onlyRole(ADDRESS_LOCK_ROLE) {
         _pauseAddress(account);
     }
 
-    function unpauseAddress(address account) public override onlyRole(Role.TIME_AND_ADRESS_LOCKER) {
+    function unpauseAddress(address account) public override onlyRole(ADDRESS_LOCK_ROLE) {
         _unpauseAddress(account);
     }
 
-    function pauseBoth(address account) public override onlyRole(Role.TIME_AND_ADRESS_LOCKER) {
+    function pauseBoth(address account) public override onlyRole(ADDRESS_LOCK_ROLE) {
         _pauseBoth(account);
     }
 
-    function unpauseBoth(address account) public override onlyRole(Role.TIME_AND_ADRESS_LOCKER) {
+    function unpauseBoth(address account) public override onlyRole(ADDRESS_LOCK_ROLE) {
         _unpauseBoth(account);
     }
 
-    function timelock(address account, uint256 time) public override onlyRole(Role.TIME_AND_ADRESS_LOCKER) {
+    function timelock(address account, uint256 time) public override onlyRole(ADDRESS_LOCK_ROLE) {
         _timelock(account, time);
     }
 
-    function changeBuyPrice(uint256 price) external override onlyRole(Role.MARKETER) {
+    function changeBuyPrice(uint256 price) external override onlyRole(MARKETER_ROLE) {
         _changeBuyPrice(price);
     }
 
-    function changeSellPrice(uint256 price) external override onlyRole(Role.MARKETER) {
+    function changeSellPrice(uint256 price) external override onlyRole(MARKETER_ROLE) {
         _changeSellPrice(price);
     }
 
-    function withdraw(uint256 gweiToWithdraw) external override payable onlyRole(Role.MARKETER) {
+    function withdraw(uint256 gweiToWithdraw) external override payable onlyRole(MARKETER_ROLE) {
         _withdraw(gweiToWithdraw);
     }
 }

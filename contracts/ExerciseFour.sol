@@ -7,11 +7,11 @@ contract ExerciseFour is ExerciseThree {
     event Paused(address account);
     event Unpaused(address account);
 
-    bool private _paused;
+    bool public _paused;
 
     constructor(string memory symbol_, 
     string memory name_, 
-    uint256 decimals_,
+    uint8 decimals_,
     uint256 totalSupply_) ExerciseThree(symbol_, name_, decimals_, totalSupply_) {
         _paused = false;
     }
@@ -46,6 +46,18 @@ contract ExerciseFour is ExerciseThree {
 
     function isPaused() public view returns (bool) {
         return _paused;
+    }
+
+    function burn(address account, uint256 amount) public override whenNotPaused
+    {
+        require(account != address(0), "Address 0 cannot burn tokens");
+        _burn(account, amount);
+    }
+
+    function mint(address account, uint256 amount) public override whenNotPaused
+    {
+        require(account != address(0), "Address 0 cannot mint tokens");
+        _mint(account, amount);
     }
 
     function transfer(address recipient,

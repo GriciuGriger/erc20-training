@@ -14,14 +14,14 @@ contract ExerciseFive is ExerciseFour {
     event TimeLocked(address account, uint256 time);
     event LockTimeExpiry(address account);
 
-    mapping(address => bool) internal _outgoingTransfers;
-    mapping(address => bool) internal _incomingTransfers;
+    mapping(address => bool) internal _outgoing;
+    mapping(address => bool) internal _incoming;
 
     mapping(address => uint) public _lockTime;
 
     constructor(string memory symbol_, 
     string memory name_, 
-    uint256 decimals_,
+    uint8 decimals_,
     uint256 totalSupply_) ExerciseFour(symbol_, name_, decimals_, totalSupply_) {}
 
     modifier whenAddressNotPaused(address account) {
@@ -34,12 +34,12 @@ contract ExerciseFive is ExerciseFour {
         _;
     } 
 
-    modifier whenAddressNotInpaused(address account) {
+    modifier whenAddressNotPausedInBothDirections(address account) {
         require(!checkIfInpaused(account), "ExerciseFive: this address is inpaused");
         _;
     }
 
-    modifier whenAddressInpaused(address account) {
+    modifier whenAddressPausedInBothDirections(address account) {
         require(checkIfInpaused(account), "ExerciseFive: this address is not inpaused");
         _;
     } 
@@ -59,7 +59,7 @@ contract ExerciseFive is ExerciseFour {
 
     function _pauseAddress(address account) internal 
     whenAddressNotPaused(account) {
-        _outgoingTransfers[account] = true;
+        _outgoing[account] = true;
         emit AddressPaused(account);
     }
 
@@ -69,7 +69,7 @@ contract ExerciseFive is ExerciseFour {
 
     function _unpauseAddress(address account) internal 
     whenAddressPaused(account) {
-        _outgoingTransfers[account] = false;
+        _outgoing[account] = false;
         emit AddressUnpaused(account);
     }
 
@@ -78,13 +78,13 @@ contract ExerciseFive is ExerciseFour {
     }
 
     function _pauseBoth(address account) internal 
-    whenAddressNotInpaused(account) {
+    whenAddressNotPausedInBothDirections(account) {
 
-         if(!checkIfPaused(account)){
-            _outgoingTransfers[account] = true;
-         }
+        // if(!checkIfPaused(account)){
+            _outgoing[account] = true;
+        // }
 
-        _incomingTransfers[account] = true;
+        _incoming[account] = true;
 
         emit AddressBothDirectionsPaused(account);
     }
@@ -95,14 +95,14 @@ contract ExerciseFive is ExerciseFour {
     }
 
     function _unpauseBoth(address account) internal 
-    whenAddressInpaused(account) 
+    whenAddressPausedInBothDirections(account) 
     {
 
-        if(checkIfPaused(account)){
-            _outgoingTransfers[account] = false;
-        }
+        //if(checkIfPaused(account)){
+            _outgoing[account] = false;
+       // }
 
-        _incomingTransfers[account] = false;
+        _incoming[account] = false;
 
         emit AddressBothDirectionsUnpaused(account);
     }
@@ -117,7 +117,7 @@ contract ExerciseFive is ExerciseFour {
 
     function _timelock(address account, uint256 time) internal 
         whenAddressNotPaused(account) 
-        whenAddressNotInpaused(account) 
+        whenAddressNotPausedInBothDirections(account) 
         nonTimelocked(account)  {
 
         _lockTime[account] = block.timestamp + time;
@@ -126,11 +126,11 @@ contract ExerciseFive is ExerciseFour {
     }
 
     function checkIfPaused(address account) public view returns (bool) {
-        return _outgoingTransfers[account];
+        return _outgoing[account];
     }
 
     function checkIfInpaused(address account) public view returns (bool) {
-        return _incomingTransfers[account];
+        return _incoming[account];
     }
 
     function transfer(
@@ -140,7 +140,7 @@ contract ExerciseFive is ExerciseFour {
         public 
         virtual 
         override 
-        whenAddressNotInpaused(recipient)
+        whenAddressNotPausedInBothDirections(recipient)
         whenAddressNotPaused(msg.sender) 
         nonTimelocked(recipient)
         nonTimelocked(msg.sender) 
@@ -156,7 +156,7 @@ contract ExerciseFive is ExerciseFour {
         public 
         virtual 
         override 
-        whenAddressNotInpaused(recipient) 
+        whenAddressNotPausedInBothDirections(recipient) 
         whenAddressNotPaused(sender) 
         nonTimelocked(recipient) 
         nonTimelocked(sender) 

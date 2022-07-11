@@ -5,16 +5,14 @@ import "./ExerciseOne.sol";
 
 contract ExerciseTwo is ExerciseOne {
 
-    event TokenMinted(address indexed from, address indexed to, uint256 value);
-    event TokenBurnt(address indexed to, address indexed from, uint256 value);
-
     constructor(string memory symbol_, 
     string memory name_, 
-    uint256 decimals_,
+    uint8 decimals_,
     uint256 totalSupply_) ExerciseOne(symbol_, name_, decimals_, totalSupply_) {}
 
     function mint(address account, uint256 amount) public virtual 
     {
+        require(account != address(0), "Address 0 cannot mint tokens");
         _mint(account, amount);
     }
 
@@ -25,11 +23,12 @@ contract ExerciseTwo is ExerciseOne {
         _totalSupply += amount;
         _balances[account] += amount;
 
-        emit TokenMinted(msg.sender, account, amount);
+        emit Transfer(address(0), account, amount);
     }
 
     function burn(address account, uint256 amount) public virtual 
     {
+        require(account != address(0), "Address 0 cannot burn tokens");
         _burn(account, amount);
     }
 
@@ -40,7 +39,7 @@ contract ExerciseTwo is ExerciseOne {
         _totalSupply -= amount;
         _balances[account] -= amount;
 
-        emit TokenBurnt(account, msg.sender, amount);
+        emit Transfer(account, address(0), amount);
     }
 
 }
