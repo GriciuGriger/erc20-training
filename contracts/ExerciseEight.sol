@@ -16,14 +16,14 @@ abstract contract ExerciseEight is ERC20, Pausable, AccessControl, Market {
     string memory name_, 
     uint256 decimals_,
     uint256 totalSupply_) ERC20(symbol_, name_) {
-        ERC20._mint(msg.sender, totalSupply_);
+        _mint(msg.sender, totalSupply_);
     }
 
     modifier whenNotPaused() override {
         _;
     }
 
-    modifier whenPaused() override{
+    modifier whenPaused() override {
         _;
     }
 
@@ -71,10 +71,6 @@ abstract contract ExerciseEight is ERC20, Pausable, AccessControl, Market {
         public 
         virtual 
         override
-        ///whenAddressNotInpaused(recipient) 
-       /// whenAddressNotPaused(sender) 
-        ///nonTimelocked(recipient) 
-        ///nonTimelocked(sender) 
         returns (bool)
     {
         return super.transferFrom(sender, recipient, amount);
