@@ -12,11 +12,9 @@ contract ExerciseEight is ERC20, Pausable, AccessControl {
     bytes32 public constant ADDRESS_LOCK_ROLE = bytes32(uint256(0x03));
     bytes32 public constant MARKETER_ROLE = bytes32(uint256(0x04));
 
-    address public fiveFunctionality;
-
     constructor(string memory symbol_, 
     string memory name_, 
-    uint256 decimals_,
+    uint8 decimals_,
     uint256 totalSupply_) ERC20(symbol_, name_) {
         _mint(msg.sender, totalSupply_);
     }
@@ -43,27 +41,6 @@ contract ExerciseEight is ERC20, Pausable, AccessControl {
  
     function unpause() public onlyRole(PAUSER_ROLE) {
         _unpause();
-    }
-    
-    function pauseAddress(address account) public onlyRole(ADDRESS_LOCK_ROLE) {
-        ExerciseFive(fiveFunctionality).pauseAddress(account);
-    }
-
-    function unpauseAddress(address account) public onlyRole(ADDRESS_LOCK_ROLE) {
-        ExerciseFive(fiveFunctionality).unpauseAddress(account);
-
-    }
-
-    function pauseBoth(address account) public onlyRole(ADDRESS_LOCK_ROLE) {
-        ExerciseFive(fiveFunctionality).pauseBoth(account);
-    }
-
-    function unpauseBoth(address account) public onlyRole(ADDRESS_LOCK_ROLE) {
-        ExerciseFive(fiveFunctionality).unpauseBoth(account);
-    }
-
-    function timelock(address account, uint256 time) public onlyRole(ADDRESS_LOCK_ROLE) {
-        ExerciseFive(fiveFunctionality).timelock(account, time);
     }
 
     function transfer(
