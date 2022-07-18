@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 import "./IERC20Mintable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-abstract contract Market is Ownable {
+contract Market is Ownable {
 
     event TokenPurchase(address purchaser, uint256 amount, uint256 price);
     event TokenSale(address seller, uint256 amount, uint256 price);
@@ -17,6 +17,10 @@ abstract contract Market is Ownable {
     uint256 internal _sellPrice;
 
     address public token;
+
+    constructor(address token_){
+        token = token_;
+    }
 
     function buyTokens() external payable 
     {

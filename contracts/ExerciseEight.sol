@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
-import "./Market.sol";
+import "./ExerciseFive.sol";
 
 contract ExerciseEight is ERC20, Pausable, AccessControl {
 
@@ -12,7 +12,7 @@ contract ExerciseEight is ERC20, Pausable, AccessControl {
     bytes32 public constant ADDRESS_LOCK_ROLE = bytes32(uint256(0x03));
     bytes32 public constant MARKETER_ROLE = bytes32(uint256(0x04));
 
-    Market public market;
+    address public fiveFunctionality;
 
     constructor(string memory symbol_, 
     string memory name_, 
@@ -44,21 +44,26 @@ contract ExerciseEight is ERC20, Pausable, AccessControl {
     function unpause() public onlyRole(PAUSER_ROLE) {
         _unpause();
     }
-
-    function changeBuyPrice(uint256 price) external onlyRole(MARKETER_ROLE) {
-        market.changeBuyPrice(price);
+    
+    function pauseAddress(address account) public onlyRole(ADDRESS_LOCK_ROLE) {
+        ExerciseFive(fiveFunctionality).pauseAddress(account);
     }
 
-    function changeSellPrice(uint256 price) external onlyRole(MARKETER_ROLE) {
-        market.changeSellPrice(price);
+    function unpauseAddress(address account) public onlyRole(ADDRESS_LOCK_ROLE) {
+        ExerciseFive(fiveFunctionality).unpauseAddress(account);
+
     }
 
-    function buy() public {
-        market.buyTokens();
+    function pauseBoth(address account) public onlyRole(ADDRESS_LOCK_ROLE) {
+        ExerciseFive(fiveFunctionality).pauseBoth(account);
     }
 
-    function sell(uint256 amount) public {
-        market.sellTokens(amount);
+    function unpauseBoth(address account) public onlyRole(ADDRESS_LOCK_ROLE) {
+        ExerciseFive(fiveFunctionality).unpauseBoth(account);
+    }
+
+    function timelock(address account, uint256 time) public onlyRole(ADDRESS_LOCK_ROLE) {
+        ExerciseFive(fiveFunctionality).timelock(account, time);
     }
 
     function transfer(
