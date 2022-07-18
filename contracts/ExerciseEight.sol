@@ -34,42 +34,5 @@ contract ExerciseEight is ERC20, Pausable, AccessControl {
     function unpause() public onlyRole(PAUSER_ROLE) {
         _unpause();
     }
-
-    function transfer(
-    address recipient,
-    uint256 amount
-    ) 
-        public 
-        virtual 
-        override
-        returns (bool)
-    {
-        return super.transfer(recipient, amount);
-    }
-
-    function transferFrom(
-    address sender, 
-    address recipient,
-    uint256 amount
-    ) 
-        public 
-        virtual 
-        override
-        returns (bool)
-    {
-        return super.transferFrom(sender, recipient, amount);
-    }
-
-    function approve(address spender, uint256 amount) public override returns(bool) {
-        return approve(spender, amount);
-    }
-
-    function balanceOf(address account) public view override returns (uint256) {
-        return balanceOf(account);
-    }
-
-    function allowance(address owner, address spender) public view override returns (uint256) {
-        return allowance(owner, spender);
-    }
   
 }
