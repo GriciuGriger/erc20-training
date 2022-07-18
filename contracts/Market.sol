@@ -20,16 +20,24 @@ abstract contract Market is Ownable {
 
     function buyTokens() external payable 
     {
+        _buyTokens();
+    }
+
+    function _buyTokens() internal 
+    {
         uint256 amount = msg.value / _buyPrice;
 
         IERC20Mintable(token).mint(msg.sender, amount);
-
-       // _mint(msg.sender, amount);
 
         emit TokenPurchase(msg.sender, amount, _buyPrice);
     }
 
     function sellTokens(uint256 amount) external
+    {
+        _sellTokens(amount);
+    }
+
+    function _sellTokens(uint256 amount) internal 
     {
         uint256 totalGain = amount * _sellPrice;
         require(address(this).balance >= totalGain, "Cannot sell tokens because of too little ether left in the contract");
@@ -43,7 +51,8 @@ abstract contract Market is Ownable {
         emit TokenSale(msg.sender, amount, _sellPrice);
     }
 
-     function changeBuyPrice(uint256 price) external virtual onlyOwner {
+    function changeBuyPrice(uint256 price) external virtual onlyOwner 
+    {
         _changeBuyPrice(price);
     }
 
@@ -56,7 +65,8 @@ abstract contract Market is Ownable {
         emit TokenBuyPriceChanged(msg.sender, price);
     }
 
-    function changeSellPrice(uint256 price) external virtual onlyOwner {
+    function changeSellPrice(uint256 price) external virtual onlyOwner 
+    {
         _changeSellPrice(price);
     }
 
@@ -74,14 +84,15 @@ abstract contract Market is Ownable {
         return (_buyPrice, _sellPrice);
     }
 
-    function withdraw(uint256 gweiToWithdraw) external virtual payable onlyOwner {
+    function withdraw(uint256 gweiToWithdraw) external virtual payable onlyOwner 
+    {
         _withdraw(gweiToWithdraw);
     }
 
     function _withdraw(uint256 gweiToWithdraw) internal  
     {
         uint256 contractBalance = address(this).balance;
-        uint256 costOfLeftTokens = IERC20(token).totalSupply() * _sellPrice;
+        uint256 costOfLeftTokens = IERC20Mintable(token).totalSupply() * _sellPrice;
         
         require(contractBalance - gweiToWithdraw >= costOfLeftTokens, "The amount of ether to withdraw exceeds cost of tokens left");
  
@@ -91,8 +102,8 @@ abstract contract Market is Ownable {
         emit ETHWithdrawn(msg.sender, gweiToWithdraw);
     }
 
-    receive() external payable {
-        
+    receive() external payable 
+    {
         uint256 amount = msg.value / _buyPrice;
 
         IERC20Mintable(token).mint(msg.sender, amount);

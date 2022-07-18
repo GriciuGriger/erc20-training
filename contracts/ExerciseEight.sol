@@ -5,12 +5,14 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "./Market.sol";
 
-abstract contract ExerciseEight is ERC20, Pausable, AccessControl, Market {
+contract ExerciseEight is ERC20, Pausable, AccessControl {
 
     bytes32 public constant MINTER_ROLE = bytes32(uint256(0x01));
     bytes32 public constant PAUSER_ROLE = bytes32(uint256(0x02));
     bytes32 public constant ADDRESS_LOCK_ROLE = bytes32(uint256(0x03));
     bytes32 public constant MARKETER_ROLE = bytes32(uint256(0x04));
+
+    Market public market;
 
     constructor(string memory symbol_, 
     string memory name_, 
@@ -43,12 +45,20 @@ abstract contract ExerciseEight is ERC20, Pausable, AccessControl, Market {
         _unpause();
     }
 
-    function changeBuyPrice(uint256 price) external override onlyRole(MARKETER_ROLE) {
-        _changeBuyPrice(price);
+    function changeBuyPrice(uint256 price) external onlyRole(MARKETER_ROLE) {
+        market.changeBuyPrice(price);
     }
 
-    function changeSellPrice(uint256 price) external override onlyRole(MARKETER_ROLE) {
-        _changeSellPrice(price);
+    function changeSellPrice(uint256 price) external onlyRole(MARKETER_ROLE) {
+        market.changeSellPrice(price);
+    }
+
+    function buy() public {
+        market.buyTokens();
+    }
+
+    function sell(uint256 amount) public {
+        market.sellTokens(amount);
     }
 
     function transfer(
@@ -87,21 +97,5 @@ abstract contract ExerciseEight is ERC20, Pausable, AccessControl, Market {
     function allowance(address owner, address spender) public view override returns (uint256) {
         return allowance(owner, spender);
     }
-
-    // function symbol() public view override(ERC20, ExerciseOne) returns (string memory) {
-    //     return ERC20.symbol();
-    // }
-
-    // function name() public view override(ERC20, ExerciseOne) returns (string memory) {
-    //     return ERC20.name();
-    // }
-
-    // function decimals() public view override(ERC20, ExerciseOne) returns (uint8) {
-    //     return ERC20.decimals();
-    // }
-
-    // function totalSupply() public view override(ERC20, ExerciseOne) returns (uint256) {
-    //     return ERC20.totalSupply();
-    // }
-
+  
 }

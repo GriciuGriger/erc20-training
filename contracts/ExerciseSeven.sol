@@ -2,8 +2,9 @@ pragma solidity ^0.8.0;
 
 import "./ExerciseFive.sol";
 import "./ExerciseSix.sol";
+import "./Market.sol";
 
-contract ExerciseSeven is ExerciseFive, Market {
+contract ExerciseSeven is ExerciseFive {
 
     bytes32 public constant MINTER_ROLE = bytes32(uint256(0x01));
     bytes32 public constant PAUSER_ROLE = bytes32(uint256(0x02));
@@ -16,6 +17,8 @@ contract ExerciseSeven is ExerciseFive, Market {
     event RoleRenounced(bytes32 role, address account);
 
     mapping(address => mapping(bytes32 => bool)) internal _hasRole;
+
+    Market public market;
 
     constructor(string memory symbol_, 
     string memory name_, 
@@ -94,15 +97,15 @@ contract ExerciseSeven is ExerciseFive, Market {
         _timelock(account, time);
     }
 
-    function changeBuyPrice(uint256 price) external override onlyRole(MARKETER_ROLE) {
-        _changeBuyPrice(price);
+    function changeBuyPrice(uint256 price) external onlyRole(MARKETER_ROLE) {
+        market.changeBuyPrice(price);
     }
 
-    function changeSellPrice(uint256 price) external override onlyRole(MARKETER_ROLE) {
-        _changeSellPrice(price);
+    function changeSellPrice(uint256 price) external onlyRole(MARKETER_ROLE) {
+        market.changeSellPrice(price);
     }
 
-    function withdraw(uint256 gweiToWithdraw) external override payable onlyRole(MARKETER_ROLE) {
-        _withdraw(gweiToWithdraw);
+    function withdraw(uint256 gweiToWithdraw) external payable onlyRole(MARKETER_ROLE) {
+        market.withdraw(gweiToWithdraw);
     }
 }
