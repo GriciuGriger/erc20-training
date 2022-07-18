@@ -19,13 +19,13 @@ contract ExerciseEight is ERC20, Pausable, AccessControl {
         _mint(msg.sender, totalSupply_);
     }
 
-    modifier whenNotPaused() override {
-        _;
-    }
+    // modifier whenNotPaused() override {
+    //     _;
+    // }
 
-    modifier whenPaused() override {
-        _;
-    }
+    // modifier whenPaused() override {
+    //     _;
+    // }
 
     function mint(address account, uint256 amount) public onlyRole(MINTER_ROLE) {
         _mint(account, amount);
