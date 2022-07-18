@@ -2,7 +2,7 @@ pragma solidity ^0.8.0;
 
 import "./Market.sol";
 
-contract ExerciseSix is Market {
+abstract contract ExerciseSix is Market {
 
     // event ETHWithdrawn(address by, uint256 amountWithdrawn);
 
